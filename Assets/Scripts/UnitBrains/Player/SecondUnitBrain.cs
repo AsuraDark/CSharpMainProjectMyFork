@@ -40,10 +40,12 @@ namespace UnitBrains.Player
 
         public override Vector2Int GetNextStep()
         {
-            Vector2Int target = Vector2Int.zero;
-            target = _outOfReachTargets.Any() ? _outOfReachTargets[0] : unit.Pos;
-
-            return IsTargetInRange(target) ? unit.Pos : unit.Pos.CalcNextStepTowards(target);
+            if(_outOfReachTargets.Count == 0 || IsTargetInRange(_outOfReachTargets[0]))
+            {
+                return unit.Pos;
+            }
+            
+            return IsTargetInRange(_outOfReachTargets[0]) ? unit.Pos : unit.Pos.CalcNextStepTowards(_outOfReachTargets[0]);
         }
 
         protected override List<Vector2Int> SelectTargets()
@@ -71,11 +73,17 @@ namespace UnitBrains.Player
                         target = i;
                     }
                 }
-                _outOfReachTargets.Add(target);
+                
 
                 if (IsTargetInRange(target))
                 {
+                    result.Clear();
                     result.Add(target);
+                }
+                else
+                {
+                    result.Clear();
+                    _outOfReachTargets.Add(target);
                 }
 
 
@@ -83,7 +91,15 @@ namespace UnitBrains.Player
             }
             else
             {
-                result.Add(runtimeModel.RoMap.Bases[IsPlayerUnitBrain ? RuntimeModel.BotPlayerId : RuntimeModel.PlayerId]);
+                if (IsPlayerUnitBrain)
+                {
+                    _outOfReachTargets.Add(runtimeModel.RoMap.Bases[RuntimeModel.BotPlayerId]);
+                }
+                else
+                {
+                    _outOfReachTargets.Add(runtimeModel.RoMap.Bases[RuntimeModel.PlayerId]);
+                }
+                
             }
 
 
