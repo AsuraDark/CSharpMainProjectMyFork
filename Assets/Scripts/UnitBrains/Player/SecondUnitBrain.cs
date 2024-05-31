@@ -17,7 +17,14 @@ namespace UnitBrains.Player
         private float _temperature = 0f;
         private float _cooldownTime = 0f;
         private bool _overheated;
+        static int ID = 0;
+        public int NumberUnit { get; private set; }
+        private int MaxTargets = 3;
 
+        public SecondUnitBrain()
+        {
+            NumberUnit = ID++; ;
+        }
         private List<Vector2Int> _outOfReachTargets = new List<Vector2Int>();
         protected override void GenerateProjectiles(Vector2Int forTarget, List<BaseProjectile> intoList)
         {
@@ -57,22 +64,22 @@ namespace UnitBrains.Player
             _outOfReachTargets.Clear();
             if (result.Count > 0)
             {
-                Vector2Int target = new Vector2Int();
+                SortByDistanceToOwnBase(result);
 
-                float MinValue = float.MaxValue;
-                float j = 0;
-
-
-
-                foreach (Vector2Int i in result)
+                int targetID = NumberUnit % MaxTargets;
+                int count;
+                if (result.Count > 1) 
                 {
-                    j = DistanceToOwnBase(i);
-                    if (j < MinValue)
-                    {
-                        MinValue = j;
-                        target = i;
-                    }
+                    count = result.Count - 2;
                 }
+                else
+                {
+                    count = result.Count - 1;
+                }
+                int targetNumber = Mathf.Min(targetID, count);
+                Vector2Int target = result[targetNumber];
+
+                
                 
 
                 if (IsTargetInRange(target))
