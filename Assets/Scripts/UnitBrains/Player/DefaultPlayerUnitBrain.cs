@@ -21,5 +21,24 @@ namespace UnitBrains.Player
             var distanceB = DistanceToOwnBase(b);
             return distanceA.CompareTo(distanceB);
         }
+
+        public override Vector2Int GetNextStep()
+        {
+            if (HasRecommendTargetInRange())
+            {
+                return unit.Pos;
+            }
+            return Singleton.getRecommendPos();
+        }
+        protected bool HasRecommendTargetInRange()
+        {
+            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
+            var diff = Singleton.getRecommendTarget() - unit.Pos;
+            if (diff.sqrMagnitude < attackRangeSqr)
+                return true;
+
+
+            return false;
+        }
     }
 }
