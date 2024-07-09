@@ -8,16 +8,16 @@ using Utilities;
 
 public class Singleton 
 {
-    private static Vector2Int recommendTarget;
-    private static Vector2Int recommendPos;
+    private Vector2Int recommendTarget;
+    private Vector2Int recommendPos;
     private IReadOnlyRuntimeModel _runtimeModel;
     private TimeUtil _timeUtil;
-
     private static Singleton instance;
-    private Singleton() 
+    private Singleton()
     {
-        _timeUtil.AddFixedUpdateAction(Update);
+        _timeUtil = ServiceLocator.Get<TimeUtil>();
         _runtimeModel = ServiceLocator.Get<IReadOnlyRuntimeModel>();
+        _timeUtil.AddFixedUpdateAction(Update);
     }
     public static Singleton getInstance()
     {
@@ -26,11 +26,11 @@ public class Singleton
 
         return instance; 
     }
-    public static Vector2Int getRecommendTarget()
+    public Vector2Int getRecommendTarget()
     {
         return recommendTarget;
     }
-    public static Vector2Int getRecommendPos()
+    public Vector2Int getRecommendPos()
     {
         return recommendPos;
     }
@@ -66,6 +66,7 @@ public class Singleton
                 
             }
         }
+
         else
         {
             foreach (var enemy in enemys)

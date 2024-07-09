@@ -3,6 +3,7 @@ using System.Linq;
 using Codice.CM.Triggers;
 using Model;
 using Model.Runtime.Projectiles;
+using UnitBrains.Pathfinding;
 using UnityEngine;
 using Utilities;
 
@@ -47,12 +48,16 @@ namespace UnitBrains.Player
 
         public override Vector2Int GetNextStep()
         {
-            //if(_outOfReachTargets.Count == 0 || IsTargetInRange(_outOfReachTargets[0]))
-            //{
-            //    return unit.Pos;
-            //}
-            //
-            return base.GetNextStep();
+            if(_outOfReachTargets.Count == 0 || IsTargetInRange(_outOfReachTargets[0]))
+            {
+                return unit.Pos;
+            }
+
+            var target = runtimeModel.RoMap.Bases[
+                IsPlayerUnitBrain ? RuntimeModel.BotPlayerId : RuntimeModel.PlayerId];
+
+            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, target);
+            return _activePath.GetNextStepFrom(unit.Pos);
         }
 
         protected override List<Vector2Int> SelectTargets()

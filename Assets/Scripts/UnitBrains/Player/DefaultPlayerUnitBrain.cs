@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model;
 using Model.Runtime.Projectiles;
+using UnitBrains.Pathfinding;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace UnitBrains.Player
 {
@@ -28,17 +30,20 @@ namespace UnitBrains.Player
             {
                 return unit.Pos;
             }
-            return Singleton.getRecommendPos();
+
+            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, Singleton.getInstance().getRecommendPos());
+            return _activePath.GetNextStepFrom(unit.Pos);
         }
         protected bool HasRecommendTargetInRange()
         {
             var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
-            var diff = Singleton.getRecommendTarget() - unit.Pos;
+            var diff = Singleton.getInstance().getRecommendTarget() - unit.Pos;
             if (diff.sqrMagnitude < attackRangeSqr)
                 return true;
 
 
             return false;
         }
+        
     }
 }
