@@ -31,13 +31,13 @@ namespace UnitBrains.Player
                 return unit.Pos;
             }
 
-            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, Singleton.getInstance().getRecommendPos());
+            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, singleton.getRecommendPos());
             return _activePath.GetNextStepFrom(unit.Pos);
         }
         protected bool HasRecommendTargetInRange()
         {
             var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
-            var diff = Singleton.getInstance().getRecommendTarget() - unit.Pos;
+            var diff = singleton.getRecommendTarget() - unit.Pos;
             if (diff.sqrMagnitude < attackRangeSqr)
                 return true;
 

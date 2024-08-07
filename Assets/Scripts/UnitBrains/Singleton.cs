@@ -13,19 +13,19 @@ public class Singleton
     private IReadOnlyRuntimeModel _runtimeModel;
     private TimeUtil _timeUtil;
     private static Singleton instance;
-    private Singleton()
+    public Singleton()
     {
         _timeUtil = ServiceLocator.Get<TimeUtil>();
         _runtimeModel = ServiceLocator.Get<IReadOnlyRuntimeModel>();
         _timeUtil.AddFixedUpdateAction(Update);
     }
-    public static Singleton getInstance()
+    /*public static Singleton getInstance()
     {
         if (instance == null)
             instance = new Singleton();
 
         return instance; 
-    }
+    }*/
     public Vector2Int getRecommendTarget()
     {
         return recommendTarget;
