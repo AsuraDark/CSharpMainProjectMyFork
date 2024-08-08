@@ -6,26 +6,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
 
-public class Singleton 
+public class Coordinator 
 {
     private Vector2Int recommendTarget;
     private Vector2Int recommendPos;
     private IReadOnlyRuntimeModel _runtimeModel;
     private TimeUtil _timeUtil;
-    private static Singleton instance;
-    public Singleton()
+    public Coordinator()
     {
         _timeUtil = ServiceLocator.Get<TimeUtil>();
         _runtimeModel = ServiceLocator.Get<IReadOnlyRuntimeModel>();
         _timeUtil.AddFixedUpdateAction(Update);
     }
-    /*public static Singleton getInstance()
-    {
-        if (instance == null)
-            instance = new Singleton();
-
-        return instance; 
-    }*/
     public Vector2Int getRecommendTarget()
     {
         return recommendTarget;

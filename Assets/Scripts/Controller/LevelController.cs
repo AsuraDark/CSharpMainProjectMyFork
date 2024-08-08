@@ -18,7 +18,7 @@ namespace Controller
         private readonly Gameplay3dView _gameplayView;
         private readonly Settings _settings;
         private readonly TimeUtil _timeUtil;
-        private Singleton singleton;
+        private Coordinator coordinator;
 
         public LevelController(RuntimeModel runtimeModel, RootController rootController)
         {
@@ -48,7 +48,7 @@ namespace Controller
             _runtimeModel.Stage = RuntimeModel.GameStage.ChooseUnit;
             _runtimeModel.Bases[RuntimeModel.PlayerId] = new MainBase(_settings.MainBaseMaxHp);
             _runtimeModel.Bases[RuntimeModel.BotPlayerId] = new MainBase(_settings.MainBaseMaxHp);
-            singleton = new Singleton();
+            coordinator = new Coordinator();
             _gameplayView.Reinitialize();
         }
 
@@ -73,7 +73,7 @@ namespace Controller
                 _runtimeModel.Map.Bases[forPlayer],
                 _runtimeModel.RoUnits.Select(x => x.Pos).ToHashSet());
             
-            var unit = new Unit(config, pos, singleton);
+            var unit = new Unit(config, pos, coordinator);
             _runtimeModel.Money[forPlayer] -= config.Cost;
             _runtimeModel.PlayersUnits[forPlayer].Add(unit);
         }
