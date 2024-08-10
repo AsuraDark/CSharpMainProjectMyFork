@@ -27,6 +27,8 @@ namespace Model.Runtime
         private float _nextMoveTime = 0f;
         private float _nextAttackTime = 0f;
         
+        private BuffSystem _buffSystem;
+
         public Unit(UnitConfig config, Vector2Int startPos, Coordinator singleton)
         {
             Config = config;
@@ -36,6 +38,7 @@ namespace Model.Runtime
             _brain.SetUnit(this);
             _brain.coordinator = singleton;
             _runtimeModel = ServiceLocator.Get<IReadOnlyRuntimeModel>();
+            _buffSystem = ServiceLocator.Get<BuffSystem>();
         }
 
         public void Update(float deltaTime, float time)
@@ -51,13 +54,13 @@ namespace Model.Runtime
             
             if (_nextMoveTime < time)
             {
-                _nextMoveTime = time + Config.MoveDelay;
+                _nextMoveTime = time + Config.MoveDelay*_buffSystem.GetMoveSpeedModifier(this);
                 Move();
             }
             
             if (_nextAttackTime < time && Attack())
             {
-                _nextAttackTime = time + Config.AttackDelay;
+                _nextAttackTime = time + Config.AttackDelay*_buffSystem.GetAttackSpeedModifier(this);
             }
         }
 
