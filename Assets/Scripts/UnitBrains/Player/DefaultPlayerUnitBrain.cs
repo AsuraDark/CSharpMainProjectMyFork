@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model;
 using Model.Runtime.Projectiles;
 using UnitBrains.Pathfinding;
@@ -26,13 +27,23 @@ namespace UnitBrains.Player
 
         public override Vector2Int GetNextStep()
         {
-            if (HasRecommendTargetInRange())
+            if (GetAllTargets().Count() > 1)
             {
-                return unit.Pos;
+                if (HasRecommendTargetInRange())
+                {
+                    return unit.Pos;
+                }
+
+                _activePath = new AStarUnitPath(runtimeModel, unit.Pos, coordinator.getRecommendPos());
+                return _activePath.GetNextStepFrom(unit.Pos);
             }
 
-            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, coordinator.getRecommendPos());
+            var target = runtimeModel.RoMap.Bases[
+                IsPlayerUnitBrain ? RuntimeModel.BotPlayerId : RuntimeModel.PlayerId];
+
+            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, target);
             return _activePath.GetNextStepFrom(unit.Pos);
+
         }
         protected bool HasRecommendTargetInRange()
         {

@@ -3,6 +3,7 @@ using Model.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Utilities;
 
@@ -38,13 +39,13 @@ public class Coordinator
 
         foreach(var enemy in enemys)
         {
-            if (Math.Abs(enemy.Pos.x) - Math.Abs(PlayerBase.x ) >= 8) 
+            if (Math.Abs(enemy.Pos.y) - Math.Abs(PlayerBase.y) < 8) 
             {
                 count++;
                 targetsOverBase.Add(enemy.Pos);
             }
         }
-        if(count > 0)
+        if (count > 0)
         {
             recommendPos.Set(PlayerBase.x + 1, PlayerBase.y);
             foreach (var enemy in targetsOverBase)
