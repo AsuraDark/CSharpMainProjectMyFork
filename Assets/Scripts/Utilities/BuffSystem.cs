@@ -6,7 +6,7 @@ using UnityEngine;
 public class BuffSystem 
 {
     private Dictionary<Unit,List<Buff>> _buffs = new Dictionary<Unit,List<Buff>>();
-
+    public Dictionary<Unit, List<Buff>> Buffs => _buffs;
     public void AddBuff(Unit unit, Buff buff)
     {
         if(!_buffs.ContainsKey(unit))
