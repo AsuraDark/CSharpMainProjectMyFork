@@ -16,12 +16,12 @@ namespace UnitBrains.Player
     {
         public override string TargetUnitName => "Buffer";
         private float _cooldownTime = 0f;
-        private float timeBetweenBuffs = 0.7f;
-        
+        private float timeBetweenBuffs = 0.5f;
+        private bool firstBuffStart = true;
+
         VFXView _vfx = ServiceLocator.Get<VFXView>();
         BuffSystem _buffSystem = ServiceLocator.Get<BuffSystem>();
        
-        private List<Vector2Int> _outOfReachTargets = new List<Vector2Int>();
         protected override void GenerateProjectiles(Vector2Int forTarget, List<BaseProjectile> intoList)
         {
 
@@ -29,36 +29,20 @@ namespace UnitBrains.Player
 
         }
 
-        public override Vector2Int GetNextStep()
-        {
-            if (timeBetweenBuffs - _cooldownTime <= 0.5f) 
-            {
-                return unit.Pos;
-            }
-
-
-            var target = runtimeModel.RoMap.Bases[
-                IsPlayerUnitBrain ? RuntimeModel.BotPlayerId : RuntimeModel.PlayerId];
-
-            _activePath = new AStarUnitPath(runtimeModel, unit.Pos, target);
-            return _activePath.GetNextStepFrom(unit.Pos);
-        }
-
-        
-
         public override void Update(float deltaTime, float time)
         {
             _cooldownTime += Time.deltaTime;
-            Debug.Log(_cooldownTime);
-            if(_cooldownTime > timeBetweenBuffs)
+            if(_cooldownTime > timeBetweenBuffs || firstBuffStart)
             {
+                if (firstBuffStart)
+                    firstBuffStart = false;
                 foreach (Unit target in runtimeModel.RoPlayerUnits)
                 {
                     if (unit == target)
                         continue;
                     if(_buffSystem.Buffs.ContainsKey(target))
                         continue;
-                    if(HasPlayerTargetInRange(target))
+                    if(IsTargetInRange(target.Pos))
                     {
                         _buffSystem.AddBuff(target, new Buff(1.0f, 10, 1));
                         _vfx.PlayVFX(target.Pos, VFXView.VFXType.BuffApplied);
@@ -70,19 +54,6 @@ namespace UnitBrains.Player
             }
 
         }
-
-        protected bool HasPlayerTargetInRange(Unit target)
-        {
-            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange;
-
-            var diff = target.Pos - unit.Pos;
-            if (diff.sqrMagnitude < attackRangeSqr)
-                return true;
-
-            return false;
-        }
-
-
 
     }
 }
