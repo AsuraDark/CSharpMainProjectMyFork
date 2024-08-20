@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Codice.CM.Triggers;
 using Model;
+using Model.Config;
 using Model.Runtime;
 using Model.Runtime.Projectiles;
 using UnitBrains.Pathfinding;
@@ -31,6 +33,7 @@ namespace UnitBrains.Player
 
         public override void Update(float deltaTime, float time)
         {
+
             _cooldownTime += Time.deltaTime;
             if(_cooldownTime > timeBetweenBuffs || firstBuffStart)
             {
@@ -44,7 +47,7 @@ namespace UnitBrains.Player
                         continue;
                     if(IsTargetInRange(target.Pos))
                     {
-                        _buffSystem.AddBuff(target, new Buff(1.0f, 10, 1));
+                        _buffSystem.AddBuff(target, CreateBuff(target.Config));
                         _vfx.PlayVFX(target.Pos, VFXView.VFXType.BuffApplied);
                         break;
                     }
@@ -53,6 +56,22 @@ namespace UnitBrains.Player
                 _cooldownTime = 0;
             }
 
+        }
+        public IBuff<Unit> CreateBuff(UnitConfig unitConfig)
+        {
+            switch (unitConfig.Type)
+            {
+                case "DefaultUnit":
+                    return new AttackSpeedBuff();
+                case "SecondUnit":
+                    return new DoubleAttackBuff();
+                case "ThirdUnit":
+                    return new AttackRangeBuff();
+                case "SupportUnit":
+                    return new SpeedBuff();
+                default:
+                    throw new ArgumentException($"Unknown unit type: {unitConfig.Type}");
+            }
         }
 
     }

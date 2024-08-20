@@ -5,6 +5,7 @@ using Model.Runtime.Projectiles;
 using Model.Runtime.ReadOnly;
 using UnitBrains;
 using UnitBrains.Pathfinding;
+using UnitBrains.Player;
 using UnityEngine;
 using Utilities;
 
@@ -26,7 +27,11 @@ namespace Model.Runtime
         private float _nextBrainUpdateTime = 0f;
         private float _nextMoveTime = 0f;
         private float _nextAttackTime = 0f;
-        
+        public float movementSpeedModifier = 1f;
+        public float attackSpeedModifier = 1f;
+        public float attackRangeModifier = 1f;
+        public bool IsDoubleAttackActive = false;
+        private List<IBuff<Unit>> activeBuffs = new List<IBuff<Unit>>();
         private BuffSystem _buffSystem;
 
         public Unit(UnitConfig config, Vector2Int startPos, Coordinator singleton)
@@ -45,22 +50,31 @@ namespace Model.Runtime
         {
             if (IsDead)
                 return;
-            
+
             if (_nextBrainUpdateTime < time)
             {
                 _nextBrainUpdateTime = time + Config.BrainUpdateInterval;
                 _brain.Update(deltaTime, time);
             }
-            
+
             if (_nextMoveTime < time)
             {
-                _nextMoveTime = time + Config.MoveDelay*_buffSystem.GetMoveSpeedModifier(this);
+                _nextMoveTime = time + Config.MoveDelay * movementSpeedModifier;
                 Move();
             }
-            
+
             if (_nextAttackTime < time && Attack())
             {
-                _nextAttackTime = time + Config.AttackDelay*_buffSystem.GetAttackSpeedModifier(this);
+                _nextAttackTime = time + Config.AttackDelay * attackSpeedModifier;
+            }
+
+            if (activeBuffs != null)
+            {
+                List<IBuff<Unit>> effectsToRemove = new List<IBuff<Unit>>();
+                foreach (IBuff<Unit> buffs in activeBuffs)
+                {
+                    buffs.UpdateDuration(this, deltaTime);
+                }
             }
         }
 
@@ -101,6 +115,28 @@ namespace Model.Runtime
         public void TakeDamage(int projectileDamage)
         {
             Health -= projectileDamage;
+        }
+
+
+        public void SetMovementSpeedModifier(float modifier)
+        {
+            movementSpeedModifier = modifier;
+        }
+
+        public void SetAttackSpeedModifier(float modifier)
+        {
+            attackSpeedModifier = modifier;
+        }
+
+        public void ModifyAttackRange(float modifier)
+        {
+            attackRangeModifier = modifier;
+            
+        }
+
+        public void SetDoubleAttackActive(bool isActive)
+        {
+            IsDoubleAttackActive = isActive;
         }
     }
 }

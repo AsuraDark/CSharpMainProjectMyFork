@@ -17,6 +17,7 @@ namespace UnitBrains.Player
         private float switchTime = 0.1f;
         private UnitState unitState = UnitState.Moving;
         private bool mode;
+        public float AttackRangeModifier = 1f;
         public override Vector2Int GetNextStep()
         {
             
@@ -55,7 +56,6 @@ namespace UnitBrains.Player
         }
         public override void Update(float deltatime, float time)
         {
-            Debug.Log(mode);
             if (mode)
             {
                 _timer += Time.deltaTime;
@@ -68,5 +68,25 @@ namespace UnitBrains.Player
             
 
         }
+        protected override bool HasTargetsInRange()
+        {
+            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange * AttackRangeModifier;
+            foreach (var possibleTarget in GetAllTargets())
+            {
+                var diff = possibleTarget - unit.Pos;
+                if (diff.sqrMagnitude < attackRangeSqr)
+                    return true;
+            }
+
+            return false;
+        }
+
+        protected override bool IsTargetInRange(Vector2Int targetPos)
+        {
+            var attackRangeSqr = unit.Config.AttackRange * unit.Config.AttackRange * AttackRangeModifier;
+            var diff = targetPos - unit.Pos;
+            return diff.sqrMagnitude <= attackRangeSqr;
+        }
+    
     }
 }

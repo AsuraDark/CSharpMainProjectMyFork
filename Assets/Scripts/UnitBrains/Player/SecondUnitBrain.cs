@@ -21,7 +21,7 @@ namespace UnitBrains.Player
         static int ID = 0;
         public int NumberUnit { get; private set; }
         private int MaxTargets = 3;
-
+        public bool IsDoubleAttackActive = false;
         public SecondUnitBrain()
         {
             NumberUnit = ID++; ;
@@ -41,6 +41,11 @@ namespace UnitBrains.Player
                 {
                     var projectile = CreateProjectile(forTarget);
                     AddProjectileToList(projectile, intoList);
+                    if (IsDoubleAttackActive)
+                    {
+                        var secondProjectile = CreateProjectile(forTarget);
+                        AddProjectileToList(secondProjectile, intoList);
+                    }
                 }
             }
             ///////////////////////////////////////
